@@ -8,7 +8,7 @@ const features = [
   },
   {
     icon: Brain,
-    title: "AI Analysis",
+    title: "AI-ML analysis",
     description: "Advanced machine learning models trained on millions of samples for precise identification.",
   },
   {
