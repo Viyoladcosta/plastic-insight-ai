@@ -1,6 +1,7 @@
-import { ArrowRight, Sparkles, Scan, Recycle } from "lucide-react";
+import { ArrowRight, Sparkles, Scan, Recycle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import pollutedBeachImage from "@/assets/polluted-beach.jpg";
+import sortedWasteImage from "@/assets/sorted-waste.jpg";
 import { Client } from "@gradio/client";
 import { useRef, useState } from "react";
 
@@ -15,12 +16,23 @@ interface Prediction {
   confidences: Confidence[];
 }
 
+// Default demo results with all material categories
+const demoResults = [
+  { label: "Plastic", percentage: 42, color: "hsl(var(--primary))" },
+  { label: "Glass", percentage: 18, color: "hsl(var(--accent))" },
+  { label: "Paper", percentage: 15, color: "hsl(45, 93%, 47%)" },
+  { label: "Organic", percentage: 12, color: "hsl(142, 76%, 36%)" },
+  { label: "Metal", percentage: 8, color: "hsl(220, 14%, 46%)" },
+  { label: "Other", percentage: 5, color: "hsl(280, 60%, 50%)" },
+];
+
 const HeroSection = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [prediction, setPrediction] = useState<Prediction[] | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [scanCompleted, setScanCompleted] = useState(false);
+  const [scanCompleted, setScanCompleted] = useState(true); // Default to completed
+  const [showDemo, setShowDemo] = useState(true);
 
   const handleAnalyzeClick = () => {
     if (fileInputRef.current) {
@@ -37,6 +49,7 @@ const HeroSection = () => {
       setIsLoading(true);
       setScanCompleted(false);
       setPrediction(null);
+      setShowDemo(false);
 
       try {
         const client = await Client.connect("https://39f8597ac7b633d416.gradio.live/");
@@ -50,16 +63,6 @@ const HeroSection = () => {
       } finally {
         setIsLoading(false);
       }
-    }
-  };
-
-  const getScanText = () => {
-    if (isLoading) {
-      return "Loading...";
-    } else if (scanCompleted) {
-      return "Completed";
-    } else {
-      return "Scanning...";
     }
   };
 
@@ -112,7 +115,7 @@ const HeroSection = () => {
                 <div className="text-sm text-muted-foreground">Accuracy Rate</div>
               </div>
               <div>
-                <div className="font-display text-3xl font-bold text-foreground">5</div>
+                <div className="font-display text-3xl font-bold text-foreground">6</div>
                 <div className="text-sm text-muted-foreground">Material Classes</div>
               </div>
               <div>
@@ -125,30 +128,74 @@ const HeroSection = () => {
           {/* Right visual */}
           <div className="flex-1 relative animate-scale-in" style={{ animationDelay: "0.3s" }}>
             <div className="relative w-full max-w-lg mx-auto">
-              {/* Main card with beach image */}
+              {/* Main card with image */}
               <div className="glass-card rounded-3xl p-4 border border-border/50">
                 <div className="aspect-video rounded-2xl relative overflow-hidden">
                   <img
-                    src={selectedImage || pollutedBeachImage}
-                    alt="Polluted beach with plastic waste for AI detection"
+                    src={selectedImage || (showDemo ? sortedWasteImage : pollutedBeachImage)}
+                    alt="Waste materials for AI detection and classification"
                     className="w-full h-full object-cover"
                   />
                   {/* AI scanning overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {(isLoading || scanCompleted) &&
-                      <div className="w-24 h-24 rounded-full border-4 border-primary/50 animate-ping" style={{ animationDuration: "2s" }} />
-                    }
-                  </div>
+                  
+                  {/* Scan status badge */}
                   <div className="absolute top-4 left-4 glass-card rounded-lg px-3 py-1.5 border border-primary/30">
                     <div className="flex items-center gap-2">
-                      <Scan className={`w-4 h-4 text-primary ${isLoading ? 'animate-pulse' : ''}`} />
-                      <span className="text-xs font-medium text-primary">{getScanText()}</span>
+                      {isLoading ? (
+                        <>
+                          <Scan className="w-4 h-4 text-primary animate-pulse" />
+                          <span className="text-xs font-medium text-primary">Scanning...</span>
+                        </>
+                      ) : scanCompleted ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-accent" />
+                          <span className="text-xs font-medium text-accent">Scan Completed</span>
+                        </>
+                      ) : (
+                        <>
+                          <Scan className="w-4 h-4 text-primary" />
+                          <span className="text-xs font-medium text-primary">Ready</span>
+                        </>
+                      )}
                     </div>
                   </div>
+
+                  {/* Total items badge */}
+                  {(showDemo || scanCompleted) && (
+                    <div className="absolute top-4 right-4 glass-card rounded-lg px-3 py-1.5 border border-accent/30">
+                      <span className="text-xs font-bold text-accent">127 Items Detected</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Detection results preview */}
+                {/* Detection results with percentages */}
+                {showDemo && !prediction && (
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center justify-between px-2">
+                      <span className="text-sm font-semibold text-foreground">Material Breakdown</span>
+                      <span className="text-xs text-muted-foreground">AI Analysis Complete</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {demoResults.map((item, index) => (
+                        <div key={index} className="p-3 rounded-xl bg-secondary/50 border border-border/30">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-foreground">{item.label}</span>
+                            <span className="text-lg font-bold" style={{ color: item.color }}>{item.percentage}%</span>
+                          </div>
+                          <div className="w-full bg-secondary rounded-full h-2">
+                            <div
+                              className="h-2 rounded-full transition-all duration-500"
+                              style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* API prediction results */}
                 {prediction && prediction[0] && (
                   <div className="mt-4 space-y-2">
                     <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50">
@@ -160,13 +207,13 @@ const HeroSection = () => {
                         <div key={index} className="p-2 rounded-lg bg-secondary/30">
                           <div className="flex justify-between items-center text-sm">
                             <span className="font-medium">{item.label}</span>
-                            <span className="font-bold text-foreground">{(item.confidence * 100).toFixed(2)}%</span>
+                            <span className="font-bold text-foreground">{(item.confidence * 100).toFixed(1)}%</span>
                           </div>
                           <div className="w-full bg-secondary rounded-full h-1.5 mt-1">
                             <div
                               className="bg-primary h-1.5 rounded-full"
                               style={{ width: `${item.confidence * 100}%` }}
-                            ></div>
+                            />
                           </div>
                         </div>
                       ))}
