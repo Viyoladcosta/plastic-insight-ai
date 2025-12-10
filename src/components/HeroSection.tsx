@@ -64,16 +64,12 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-24">
-       <video
-        autoPlay
-        loop
-        muted
-        className="absolute top-0 left-0 w-full h-full object-cover -z-10"
-      >
-        <source src="/Hero_Video.mp4" type="video/mp4" />
-      </video>
-      <div className="absolute top-0 left-0 w-full h-full bg-black/50 -z-10" />
+    <section className="relative min-h-screen hero-gradient overflow-hidden pt-24">
+      {/* Background effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: "2s" }} />
+      </div>
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 py-16 lg:py-24">
@@ -84,13 +80,13 @@ const HeroSection = () => {
               ML-Powered Waste Detection
             </div>
 
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
               Identify & Classify{" "}
               <span className="gradient-text">Waste Materials</span>{" "}
               with AI-ML analysis
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-300 max-w-xl mb-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
               Upload an image of waste material and get an instant AI-ML analysis of its composition.
               Join the movement for smarter waste management.
             </p>
@@ -112,16 +108,16 @@ const HeroSection = () => {
             {/* Stats */}
             <div className="flex flex-wrap gap-8 mt-12 justify-center lg:justify-start animate-fade-up" style={{ animationDelay: "0.4s" }}>
               <div>
-                <div className="font-display text-3xl font-bold text-white">98%</div>
-                <div className="text-sm text-slate-300">Accuracy Rate</div>
+                <div className="font-display text-3xl font-bold text-foreground">98%</div>
+                <div className="text-sm text-muted-foreground">Accuracy Rate</div>
               </div>
               <div>
-                <div className="font-display text-3xl font-bold text-white">5</div>
-                <div className="text-sm text-slate-300">Material Classes</div>
+                <div className="font-display text-3xl font-bold text-foreground">5</div>
+                <div className="text-sm text-muted-foreground">Material Classes</div>
               </div>
               <div>
-                <div className="font-display text-3xl font-bold text-white">1M+</div>
-                <div className="text-sm text-slate-300">Scans Completed</div>
+                <div className="font-display text-3xl font-bold text-foreground">1M+</div>
+                <div className="text-sm text-muted-foreground">Scans Completed</div>
               </div>
             </div>
           </div>
